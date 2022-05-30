@@ -1,10 +1,5 @@
 name: 🚀 Deploy
-on:
-  push:
-    branches:
-      - master
-      - develop
-  pull_request: {}
+on: [push]
 permissions:
   actions: write
   contents: read
@@ -109,10 +104,17 @@ jobs:
       - name: 🌳 Cypress run
         uses: cypress-io/github-action@v3
         with:
+          record: true
           start: npm run start:mocks
           wait-on: "http://localhost:8811"
         env:
           PORT: "8811"
+          # pass the Dashboard record key as an environment variable
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          # pass the project ID from the secrets through environment variable
+          CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+          # pass GitHub token to allow accurately detecting a build vs a re-run build
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build:
     name: 🐳 Build
